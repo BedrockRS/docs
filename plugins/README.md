@@ -70,9 +70,34 @@ Each plugin runs in its own Luau VM, on a thread of its own, away from the game:
 - Plugins don't share globals; the standard libraries and the server's tables are read-only.
 - A plugin may use up to **64 MiB** of memory.
 - Each call into a plugin (loading it, an event handler, a command) may run for at most **1 second**; past that it's stopped with an error. Event handlers and commands that wait on a plugin for longer than 2 seconds go ahead without it.
-- There's no access to files or the network.
+- There's no access to files or the network, beyond [requiring](#splitting-a-plugin-across-files) scripts in the plugin's own folder.
 
-For now, a plugin is its entry script: `require` isn't supported yet, so a plugin can't be split across files.
+## Splitting a plugin across files
+
+`require` loads other scripts from the plugin's folder, with Luau's require-by-string paths:
+
+```text
+server/plugins/warps/
+  plugin.json
+  main.luau
+  storage.luau
+  commands/
+    init.luau
+    admin.luau
+```
+
+```lua
+-- main.luau
+local storage = require("./storage")    -- storage.luau
+local commands = require("./commands")  -- commands/init.luau
+```
+
+- Paths start with `./` (next to the requiring script) or `../` (up a folder). A script may end in `.luau` or `.lua`, which you leave out.
+- A folder can be required as a module through its `init.luau`. Inside it, `./x` is next to the folder, and `@self/x` is inside it: `require("@self/admin")` in `commands/init.luau` loads `commands/admin.luau`.
+- Nothing outside the plugin's folder can be required, not even through `../` or a link pointing out of it. `.luaurc` files and their aliases are ignored.
+- A module runs once per plugin: requiring it again, from anywhere in the plugin, returns what it returned the first time. That's how scripts share state.
+- Modules count towards the plugin's 1-second limit and memory, like the rest of its code.
+- Saving any script in the folder reloads the plugin, not just its entry script.
 
 ## Output
 
