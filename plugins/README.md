@@ -36,10 +36,10 @@ end)
 Start the server (or save the file while it runs) and the console shows:
 
 ```text
-INF [bedrockrs_plugins] loaded plugin: Greets players plugin=greeter version=1.0.0 author=You
+INF [Plugins] Loaded plugin: greeter (1.0.0, You)
 ```
 
-The script runs once when the plugin loads. Most plugins use that run to listen for [events](events.md) and add [slash commands](commands.md).
+Anything the script prints while it loads follows that line. The script runs once when the plugin loads. Most plugins use that run to listen for [events](events.md) and add [slash commands](commands.md).
 
 ## `plugin.json`
 

@@ -20,12 +20,13 @@ Settings left out keep their default, and unknown settings or wrong types stop t
 
 ```toml
 [logs]
+# How much the console shows: "error", "warn", "info", "debug" or "trace".
+# "info" shows what happens on the server; "debug" adds routine activity and
+# details for finding problems, such as when reporting a bug.
+level = "info"
 # Show player chat, plugin broadcasts, private plugin messages and chat that
 # plugins cancelled in the console.
 chat = true
-# Show routine internal activity: connections, logins, chunk streaming and
-# saves, refused actions, and the libraries the server is built on.
-system_noise = false
 
 [players]
 # The game mode of players joining for the first time: survival, creative,
@@ -35,11 +36,21 @@ default_game_mode = "creative"
 
 | Setting | Default | What it does |
 |---|---|---|
+| `logs.level` | `"info"` | How much the console shows: `error`, `warn`, `info`, `debug` or `trace` |
 | `logs.chat` | `true` | Shows chat, broadcasts and death messages in the console |
-| `logs.system_noise` | `false` | Shows routine activity, for finding problems |
 | `players.default_game_mode` | `"creative"` | The game mode of new players. `default` in `/gamemode` means this mode. |
 
-When the `RUST_LOG` environment variable is set, it replaces the `[logs]` settings. `NO_COLOR` turns the console's colours off.
+At `info`, the console shows what happens on the server, one plain line each:
+
+```text
+<26/10/07 22:36:09.628> INF [BedrockRS] Opened world: world
+<26/10/07 22:36:09.674> INF [BedrockRS] Listening on 0.0.0.0:19132
+<26/10/07 22:37:02.113> INF [BedrockRS] Steve joined the game
+```
+
+`debug` adds connections, chunk streaming, saves and the details behind each line. It's what to send along with a bug report. `trace` is for working on the server itself.
+
+`system_noise = true`, from before `level`, still works as `level = "debug"`; the console asks you to switch. When the `RUST_LOG` environment variable is set, it replaces the `[logs]` settings. `NO_COLOR` turns the console's colours off.
 
 ## Game rules
 
